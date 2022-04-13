@@ -1,0 +1,200 @@
+Year = YEAR(TODAY())
+Quarter = QUARTER(TransactionDate) // An integer number from 1 to 4.
+Month = MONTH(TransactionDate) // Return months number 1 to 12.
+Day = DAY([Birthdate]) // Returns the day of the month, a number from 1 to 31.
+HOUR = HOUR('Orders'[TransactionTime])
+WEEKDAY([TransactionTime], 2) //1 to 7. (week start : 1-Sunday, 2-Monday)
+WEEKNUM([TransactionTime], 2) //Week of the year. (week start : 1-Sunday, 2-Monday).
+
+VALUE(varchar) // Converts a number from text format.
+DATEVALUE(date_text) // text format to date in date format. = DATEVALUE("8/1/2009")
+TIMEVALUE(time_text) // text format to time in time format. 
+
+
+CALENDAR(<start_date>, <end_date>)  
+CALENDARAUTO([fiscal_year_end_month])
+
+
+CLOSINGBALANCEMONTH= CLOSINGBALANCEMONTH(SUMX(ProductInventory,[SalesAmount]),DateTime[DateKey])
+CLOSINGBALANCEQUARTER= CLOSINGBALANCEQUARTER(SUMX(ProductInventory,[SalesAmount]),DateTime[DateKey])
+CLOSINGBALANCEYEAR= CLOSINGBALANCEYEAR(SUMX(ProductInventory,[UnitCost]*[SalesAmount]),DateTime[DateKey])
+
+DATEADD      	=DATEADD	(DateTime[DateKey],-1,year)
+DATESINPERIOD	=DATESINPERIOD  (Date[Date],MAX(Date[Date]),-1,YEAR)) //(<dates>, <start_date>, <number_of_intervals>, <interval>).//CALCULATE(SUM(Sales[Sales Amount]),DATESINPERIOD('Date'[Date],MAX('Date'[Date]),-1,YEAR))
+DATEDIFF     	=DATEDIFF	(Order[Order Date], Order[Delivery Date], YEAR) // YEAR,QUARTER,MONTH,WEEK,DAY,HOURS,MINUS,SECONDS... Returns the count of interval boundaries crossed between two dates.
+DATESBETWEEN 	=DATESBETWEEN //CALCULATE(SUM(Sales[Sales Amount]), DATESBETWEEN(Sales[Date], Order[Order Date], Order[Delivery Date]))
+YEARFRAC	=YEARFRAC (StartDate, EndDate)
+
+------------
+TOTALMTD = TOTALMTD(SUM(InternetSales_USD[SalesAmount_USD]),DateTime[DateKey])
+TOTALQTD = TOTALQTD(SUM(InternetSales_USD[SalesAmount_USD]),DateTime[DateKey])
+TOTALYTD = TOTALYTD(SUM(InternetSales_USD[SalesAmount_USD]),DateTime[DateKey])
+
+DATESMTD =CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), DATESMTD(DateTime[DateKey]))
+DATESQTD =CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), DATESQTD(DateTime[DateKey]))
+DATESYTD =CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), DATESYTD(DateTime[DateKey]))
+
+= CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), DATESMTD(DateTime[DateKey]))
+
+Annlzd RoR % YTD = CALCULATE([Annlzd RoR], DATESYTD(Dates[Date],"06-30"))
+
+
+------------
+CY Sales = 
+var CY = MAX(Orders [Order Date].[Year])
+return
+CALCULATE(SUM(Orders[Sales]), Orders [Order Date].[Year]=CY)
+
+CY Budget Sales = 
+var CY = MAX(Orders [Order Date].[Year])
+return
+CALCULATE(SUM(Orders[Budget Amount]), Orders [Order Date].[Year]=CY)
+
+PY Sales = 
+var PY = MAX(Orders [Order Date].[Year])-1
+return
+CALCULATE(SUM(Orders [Sales]),Orders [Order Date].[Year]=PY)
+
+YoY Sales = 
+DIVIDE([CY Sales]-[PY Sales],[PY Sales],BLANK())
+
+
+------------
+
+ENDOFMONTH = ENDOFMONTH(DateTime[DateKey])
+ENDOFQUARTER = ENDOFQUARTER(DateTime[DateKey])
+ENDOFYEAR = ENDOFYEAR(DateTime[DateKey],"06/30/2004")
+FIRSTDATE = FIRSTDATE('InternetSales_USD'[SaleDateKey])
+LASTDATE = LASTDATE('InternetSales_USD'[SaleDateKey])
+
+
+NEXTDAY = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), NEXTDAY('DateTime'[DateKey]))
+NEXTMONTH = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), NEXTMONTH('DateTime'[DateKey]))
+NEXTQUARTER = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), NEXTQUARTER('DateTime'[DateKey]))
+NEXTYEAR = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), NEXTYEAR('DateTime'[DateKey]))
+
+PREVIOUSDAY = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), PREVIOUSDAY('DateTime'[DateKey]))
+PREVIOUSMONTH = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), PREVIOUSMONTH('DateTime'[DateKey]))
+PREVIOUSQUARTER = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), PREVIOUSQUARTER('DateTime'[DateKey]))
+PREVIOUSYEAR = CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), PREVIOUSYEAR('DateTime'[DateKey]))
+
+
+PARALLELPERIOD 		= CALCULATE(SUM(InternetSales_USD[SalesAmount_USD]), PARALLELPERIOD(DateTime[DateKey],-1,year)) --- MONTH, QARTER, DAY
+SAMEPERIODLASTYEAR 	= CALCULATE(SUM(ResellerSales_USD[SalesAmount_USD]), SAMEPERIODLASTYEAR(DateTime[DateKey]))
+
+
+current year = YEAR(TODAY())
+current Quarter =  QUARTER(TODAY())
+current month = MONTH(TODAY())
+todayDate = TODAY()
+Date of Birth = YEAR(TODAY())-1963
+
+
+
+===============================================================
+Parent Child Function:
+---------------------
+pathemp&mgr 		= PATH(pc[empid],pc[mgrid]) // create hiearchy between emplyee and their manager.
+pathEmpCon 		= PATHCONTAINS(pc[pathemp&mgr],162) // Hierarchy path contain specified empid, here empid is 162. Give result True/False.
+4thPositionOfEmp 	= PATHITEM(pc[pathemp&mgr],4) // who all are in 4th position of emplyees
+2thPositionOfEmpReverse = PATHITEMREVERSE(pc[pathemp&mgr],2)
+			= PATHITEMREVERSE(PATH(Employee[EmployeeKey], Employee[ParentEmployeeKey]), 3, 1)
+			= PATHLENGTH(PATH(Employee[EmployeeKey], Employee[ParentEmployeeKey]))
+
+
+empid	empname	mgrid	mgrname	job		path emp&mgr		pathEmpCon	4thPositionOfEmp	2thPositionOfEmpReverse
+112	Brain			Manager		112			FALSE		
+81	Aries	162	Barry	Associate	112|14|3|162|81		TRUE		162			162
+117	James	162	Barry	Team Lead	112|14|3|162|117	TRUE		162			162
+221	Louise	162	Barry	Associate	112|14|3|162|221	TRUE		162			162
+14	Julio	112	Brain	Manager		112|14			FALSE		112
+3	Linda	14	Julio	Manager		112|14|3		FALSE		14
+162	Barry	3	Linda	Manager		112|14|3|162		TRUE		162			3
+11	Kelly	3	Linda	Developer	112|14|3|11		FALSE		11			3
+13	Ken	3	Linda	BA		112|14|3|13		FALSE		13			3
+
+
+
+
+
+===============================================================
+Information functions
+---------------------
+CONTAINS = CONTAINS(InternetSales, [ProductKey], 214, [CustomerKey], 11185) - creates a measure that tells you whether there were any Internet sales of product 214 and to customer 11185 at the same time.
+CONTAINSROW = CONTAINSROW EVALUATE FILTER(ALL(DimProduct[Color]), NOT CONTAINSROW({ "Red", "Yellow", "Blue" }, [Color])) ORDER BY [Color] Ex2 = FILTER(ALL(DimProduct[Color]), NOT [Color] IN { "Red", "Yellow", "Blue" }) ORDER BY [Color]
+HASONEVALUE = IF(HASONEVALUE(DateTime[CalendarYear]),SUM(ResellerSales_USD[SalesAmount_USD])/CALCULATE(SUM(ResellerSales_USD[SalesAmount_USD]),DateTime[CalendarYear]=2007),BLANK())
+ISBLANK = IF( ISBLANK('CalculatedMeasures'[PreviousYearTotalSales]), BLANK() 
+SELECTEDVALUE = SELECTEDVALUE(DimProduct[Color], "No Single Selection")
+KEEPFILTERS = CALCULATE('Internet Sales'[Internet Total Sales], KEEPFILTERS('Geography'[State Province Code]="WA") Ex2 =CALCULATE('Internet Sales'[Internet Total Sales] ,'Geography'[State Province Code]="WA")
+
+============================
+Table manipulation functions
+----------------------------
+= GROUPBY(SalesByCountry,Geography[Country],"Max Sales", MAXX(CURRENTGROUP(), [Total Sales]))  
+= SUMMARIZECOLUMNS(Geography[Country],Product[Category],"Total Sales", SUMX(Sales, Sales[Price] * Sales[Qty]))  
+= SUMMARIZE(ResellerSales_USD, DateTime[CalendarYear], ProductCategory[ProductCategoryName], "Sales Amount (USD)", SUM(ResellerSales_USD[SalesAmount_USD]) , "Discount Amount (USD)", SUM(ResellerSales_USD[DiscountAmount]))
+= SUMX(TOPN(10, SUMMARIZE(Product, [ProductKey], "TotalSales", SUMX(RELATED(InternetSales_USD[SalesAmount_USD]), InternetSales_USD[SalesAmount_USD]) + SUMX(RELATED(ResellerSales_USD[SalesAmount_USD]), ResellerSales_USD[SalesAmount_USD]))
+
+
+============================
+
+DAX frequent used:
+-----------------
+YoY% = VAR Sales = SUM(SalesTable[SalesAmount])  
+VAR SalesLastYear = CALCULATE ( SUM ( SalesTable[SalesAmount] ), SAMEPERIODLASTYEAR ( 'Calendar'[Date] ) )
+return if(Sales, DIVIDE(Sales – SalesLastYear, Sales))
+
+
+PRODUCT = PRODUCT( Annuity[AdjustedRates] )
+PRODUCTX = [PresentValue] * PRODUCTX( AnnuityPeriods, 1+[FixedInterestRate] )
+
+
+SWITCH Month = SWITCH([Month], 1, "January", 2, "February", 3, "March", 4, "April"  , 5, "May", 6, "June", 7, "July", 8, "August" , 9, "September", 10, "October", 11,"November",12,"December" ,"Unknown month number" )
+
+
+ADDCOLUMNS (
+    CALENDARAUTO (),
+    "Year", YEAR ( [Date] ),
+    "Quarter", "Q" & QUARTER ( [Date] ),
+    "Month", FORMAT ( [Date], "mmmm" ),
+    "Month Number", MONTH ( [Date] ))
+ORDER BY [Date] ASC
+
+=============================
+LOOKUPVALUE() Function:
+When we have no relation between table and we wants to pull data based on matching data column.
+Pulling Dept Name from Dept Table into EMP table.
+1st parameter: Result column what you want to show.
+2nd parameter: Based on which column we are pulling data from DEPT table (its matched column).
+3rd parameter: which column passing values from EMP table to DEPT table.
+
+DeptName = LOOKUPVALUE(Dept[DeptName],Dept[DeptNo],Emp[Dept])
+
+LOOKUPVALUE(
+    <result_columnName>,
+    <search_columnName>,
+    <search_value>
+    [, <search2_columnName>, <search2_value>]…
+    [, <alternateResult>]
+)
+
+
+
+
+
+
+============
+
+EMPID, EMPName, Salary, Date, Weekly Sal, Montly Sal
+
+Select AVG(Salary), Month(Date), Month(Week) from emp
+group by Month(Date)
+
+
+
+
+shona s12
+
+
+
+
